@@ -27,8 +27,7 @@ fun CalculatorView(
 
     var displayText by remember { mutableStateOf("0") }
 
-    var  operand by remember { mutableStateOf(0.0) }
-    var  operation by remember { mutableStateOf<String?>(null) }
+    val calculatorBrain by remember {  mutableStateOf(CalculatorBrain()) }
 
     var userIsTypingNumber by remember { mutableStateOf(true) }
     
@@ -36,11 +35,7 @@ fun CalculatorView(
         if (userIsTypingNumber) {
             if (digit == ".") {
                 if (!displayText.contains('.')) {
-                    if (displayText == "0") {
-                        displayText += digit
-                    } else {
-                        displayText += digit
-                    }
+                    displayText += digit
                 }
             } else {
                 if (displayText == "0") {
@@ -50,25 +45,30 @@ fun CalculatorView(
                 }
             }
         }else{
-            displayText = digit
+            if (digit == ".") {
+                displayText = "0."
+            }else {
+                displayText = digit
+            }
         }
-
-
         userIsTypingNumber = true
     }
 
 
     val onOperationPressed : (String) -> Unit = { op ->
-        var result = displayText.toDouble()
-        if (op == "+"){
-            result = operand + result
-        }else if (op == "-"){
-            result = operand - result
-        }
-        displayText = result.toString()
 
-        operand = displayText.toDouble()
-        operation = op
+        calculatorBrain.doOperation(
+            displayText.toDouble(),
+            CalculatorBrain.Operation.parseOperation(op)
+        )
+
+        val result = calculatorBrain.operand
+
+        if ((result % 1.0) == 0.0 ) {
+            displayText = result.toInt().toString()
+        }else{
+            displayText = result.toString()
+        }
 
         userIsTypingNumber = false
     }
@@ -79,7 +79,9 @@ fun CalculatorView(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             text = displayText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.displayLarge
@@ -88,25 +90,35 @@ fun CalculatorView(
             CalculatorButton( label = "7" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "8" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "9" , onNumPressed =  onDigitPressed )
-            CalculatorButton( label = "+" , onNumPressed =  onOperationPressed )
+            CalculatorButton( label = "+" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
         }
         Row() {
             CalculatorButton( label = "6" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "5" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "4" , onNumPressed =  onDigitPressed )
-            CalculatorButton( label = "-" , onNumPressed =  onOperationPressed )
+            CalculatorButton( label = "-" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
         }
         Row() {
             CalculatorButton( label = "1" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "2" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "3" , onNumPressed =  onDigitPressed )
-            CalculatorButton( label = "÷" , onNumPressed =  onOperationPressed )
+            CalculatorButton( label = "÷" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
         }
         Row() {
             CalculatorButton( label = "0" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "." , onNumPressed =  onDigitPressed )
-            CalculatorButton( label = "=" , onNumPressed =  onOperationPressed )
-            CalculatorButton( label = "×" , onNumPressed =  onOperationPressed )
+            CalculatorButton( label = "=" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
+            CalculatorButton( label = "×" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
         }
     }
 }
