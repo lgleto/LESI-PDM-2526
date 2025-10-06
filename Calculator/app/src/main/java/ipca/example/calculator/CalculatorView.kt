@@ -57,10 +57,17 @@ fun CalculatorView(
 
     val onOperationPressed : (String) -> Unit = { op ->
 
-        calculatorBrain.doOperation(
-            displayText.toDouble(),
-            CalculatorBrain.Operation.parseOperation(op)
-        )
+        if ( op == "=" || op == "AC" ||  op == "√"|| op == "%" || op == "C") {
+            calculatorBrain.unaryOperation(
+                displayText.toDouble(),
+                CalculatorBrain.Operation.parseOperation(op)
+            )
+        }else {
+            calculatorBrain.doOperation(
+                displayText.toDouble(),
+                CalculatorBrain.Operation.parseOperation(op)
+            )
+        }
 
         val result = calculatorBrain.operand
 
@@ -86,6 +93,20 @@ fun CalculatorView(
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.displayLarge
         )
+        Row() {
+            CalculatorButton( label = "AC" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
+            CalculatorButton( label = "C" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
+            CalculatorButton( label = "√" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
+            CalculatorButton( label = "%" ,
+                onNumPressed =  onOperationPressed,
+                isOperation = true)
+        }
         Row() {
             CalculatorButton( label = "7" , onNumPressed =  onDigitPressed )
             CalculatorButton( label = "8" , onNumPressed =  onDigitPressed )

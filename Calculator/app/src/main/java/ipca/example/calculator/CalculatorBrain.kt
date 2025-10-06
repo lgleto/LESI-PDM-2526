@@ -1,10 +1,5 @@
 package ipca.example.calculator
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-
 class CalculatorBrain {
 
     enum class Operation(op: String) {
@@ -14,7 +9,10 @@ class CalculatorBrain {
         DIVIDE("÷"),
         EQUAL("="),
         SQRT("√"),
-        PERCENTAGE("%");
+        PERCENTAGE("%"),
+        CLEAR("AC"),
+        CLEAR_ENTRY("C");
+
 
         companion object {
             fun parseOperation(op: String): Operation {
@@ -26,6 +24,8 @@ class CalculatorBrain {
                     "=" -> EQUAL
                     "√" -> SQRT
                     "%" -> PERCENTAGE
+                    "AC" -> CLEAR
+                    "C" -> CLEAR_ENTRY
                     else -> EQUAL
                 }
             }
@@ -36,15 +36,44 @@ class CalculatorBrain {
     var  operand = 0.0
     var  operation : Operation? = null
 
-    fun doOperation(newOperand : Double, newOperation : Operation) {
+    fun unaryOperation(newOperand : Double, newOperation : Operation) {
         var result = newOperand
         when(newOperation){
-            Operation.ADD -> result = operand + newOperand
+            Operation.SQRT -> result = kotlin.math.sqrt(newOperand)
+            Operation.PERCENTAGE -> result = newOperand / 100
+            Operation.EQUAL -> {
+                operation?.let {
+                    when(operation){
+                        Operation.ADD ->  { result = operand + newOperand }
+                        Operation.SUBTRACT -> result = operand - newOperand
+                        Operation.MULTIPLY -> result = operand * newOperand
+                        Operation.DIVIDE -> result = operand / newOperand
+                        else -> {}
+                    }
+                }
+            }
+            Operation.CLEAR -> {
+                operation = null
+                result = 0.0
+            }
+            Operation.CLEAR_ENTRY -> result = 0.0
+            else -> {}
+
+        }
+        operand = result
+    }
+
+    fun doOperation(newOperand : Double, newOperation : Operation) {
+        var result = newOperand
+        when(operation){
+            Operation.ADD ->  { result = operand + newOperand }
             Operation.SUBTRACT -> result = operand - newOperand
             Operation.MULTIPLY -> result = operand * newOperand
             Operation.DIVIDE -> result = operand / newOperand
-            else->{}
+            else -> {}
         }
+
+        operation = newOperation
         operand = result
     }
 

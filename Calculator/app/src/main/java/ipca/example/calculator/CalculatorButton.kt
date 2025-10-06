@@ -36,7 +36,9 @@ fun CalculatorButton(
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.displayMedium
+            style = if ( label.count()==1)
+                MaterialTheme.typography.displayMedium else
+                MaterialTheme.typography.titleMedium
         )
     }
 }
@@ -47,7 +49,7 @@ fun CalculatorButtonPreview(){
     CalculatorTheme {
         CalculatorButton(
             modifier = Modifier,
-            label = "7",
+            label = "AC",
             onNumPressed = {}
         )
     }
