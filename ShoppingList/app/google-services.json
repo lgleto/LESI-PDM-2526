@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1035101036365",
+    "project_id": "shoppinglist-lesi-2526",
+    "storage_bucket": "shoppinglist-lesi-2526.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035101036365:android:f04eecd3119e68d860a104",
+        "android_client_info": {
+          "package_name": "ipca.example.shoppinglist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwYEo1oka1GzeGrqYJ-U9P2E1l99M_z7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
