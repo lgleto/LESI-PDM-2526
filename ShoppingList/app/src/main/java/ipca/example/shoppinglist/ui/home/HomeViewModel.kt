@@ -1,12 +1,13 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.home
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import ipca.example.shoppinglist.TAG
+import ipca.example.shoppinglist.models.Cart
 
 data class HomeViewState (
     var carts : List<Cart> = emptyList(),
@@ -23,7 +24,10 @@ class HomeViewModel : ViewModel() {
     fun fetchCarts() {
         uiState.value = uiState.value.copy(isLoading = true)
 
-        val docRef = db.collection("carts")
+        val docRef = db
+            .collection("carts")
+            .whereArrayContains("owners", Firebase.auth.currentUser?.uid!!)
+
         docRef.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e)
@@ -62,7 +66,7 @@ class HomeViewModel : ViewModel() {
 
         val user = Cart(
             name = "New cart ${uiState.value.carts.size + 1}",
-            owners =  listOf<String>(userID!!),
+            owners = listOf<String>(userID!!),
         )
 
         db.collection("carts")

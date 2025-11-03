@@ -1,9 +1,7 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,17 +26,16 @@ import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 
 @Composable
-fun ProductsView (
+fun HomeView (
     navController: NavController,
-    modifier: Modifier = Modifier,
-    cartId : String
+    modifier: Modifier = Modifier
 ){
 
-    val viewModel : ProductsViewModel = viewModel()
+    val viewModel : HomeViewModel = viewModel()
     val uiState by viewModel.uiState
 
     LaunchedEffect(Unit) {
-        viewModel.fetchProducts(cartId)
+        viewModel.fetchCarts()
     }
 
     Box(
@@ -59,55 +56,40 @@ fun ProductsView (
                 modifier = Modifier.fillMaxSize()
             ) {
                 itemsIndexed(
-                    items = uiState.products
+                    items = uiState.carts
                 ) { index, item ->
 
-                    Column {
-                        Text(
-                            text = item.name ?: "",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .clickable {
-                                    //navController
-                                    //   .navigate("details/${item.title}/${item.url?.encodeURL()}")
-                                },
-                            fontSize = 32.sp
-                        )
-                        Text(
-                            text = item.qtd?.toString()?: "",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .clickable {
-                                    //navController
-                                    //   .navigate("details/${item.title}/${item.url?.encodeURL()}")
-                                },
-                            fontSize = 32.sp
-                        )
-
-                    }
+                    Text(
+                        text = item.name?:"",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable{
+                                navController
+                                    .navigate("products/${item.docId}")
+                            }
+                        ,
+                        fontSize = 32.sp
+                    )
                 }
             }
         }
         Button(
             modifier = Modifier.padding(16.dp),
             onClick = {
-                navController
-                    .navigate("product_detail/${cartId}")
+                viewModel.creatCart()
             }) {
-            Text("Add Product")
+            Text("Add cart")
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProductsViewPreview() {
+fun HomeViewPreview() {
     ShoppingListTheme {
-        ProductsView(
-            navController = rememberNavController(),
-            cartId = "123"
+        HomeView(
+            navController = rememberNavController()
         )
     }
 }

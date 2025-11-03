@@ -1,30 +1,20 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.products
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import ipca.example.shoppinglist.models.Product
 import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 
@@ -32,12 +22,17 @@ import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 fun ProductDetailView (
     navController: NavController,
     modifier: Modifier = Modifier,
-    cartId : String
+    cartId : String,
+    productId: String?
 ){
 
     val viewModel : ProductDetailViewModel = viewModel()
     val uiState by viewModel.uiState
 
+
+    LaunchedEffect(productId) {
+        viewModel.fetchProduct(cartId, productId)
+    }
 
 
     Column {
@@ -61,9 +56,10 @@ fun ProductDetailView (
             modifier = Modifier.padding(8.dp),
             onClick = {
                 viewModel.createProduct(cartId)
+                navController.popBackStack()
             }
         ) {
-            Text("Add")
+            Text(if (productId == null) "Create" else "Update")
         }
     }
 
@@ -76,7 +72,8 @@ fun ProductDetailViewPreview() {
     ShoppingListTheme {
         ProductDetailView(
             navController = rememberNavController(),
-            cartId = "123"
+            cartId = "123",
+            productId = null
         )
     }
 }

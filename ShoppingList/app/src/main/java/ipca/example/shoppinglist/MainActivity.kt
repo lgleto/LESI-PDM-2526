@@ -7,16 +7,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import ipca.example.shoppinglist.ui.home.HomeView
+import ipca.example.shoppinglist.ui.login.LoginView
+import ipca.example.shoppinglist.ui.products.ProductDetailView
+import ipca.example.shoppinglist.ui.products.ProductsView
 import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 const val TAG = "ShoppingList"
@@ -41,9 +42,9 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable ("home"){
-                           HomeView(
-                               navController = navController
-                           )
+                            HomeView(
+                                navController = navController
+                            )
                         }
 
                         composable ("products/{cartId}"){
@@ -54,11 +55,21 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        composable ("product_detail/{cartId}/{productId}"){
+                            val cartId = it.arguments?.getString("cartId")
+                            val productId = it.arguments?.getString("productId")
+                            ProductDetailView(
+                                navController = navController,
+                                cartId = cartId!!,
+                                productId = productId
+                            )
+                        }
                         composable ("product_detail/{cartId}"){
                             val cartId = it.arguments?.getString("cartId")
                             ProductDetailView(
                                 navController = navController,
-                                cartId = cartId!!
+                                cartId = cartId!!,
+                                productId = null
                             )
                         }
                     }

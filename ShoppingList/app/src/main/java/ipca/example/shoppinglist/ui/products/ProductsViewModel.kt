@@ -1,12 +1,12 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.products
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import ipca.example.shoppinglist.TAG
+import ipca.example.shoppinglist.models.Product
 
 data class ProductsViewState (
     var products : List<Product> = emptyList(),
@@ -56,6 +56,18 @@ class ProductsViewModel : ViewModel() {
 
         }
 
+    }
+
+    fun checkItem(product : Product, checked : Boolean){
+        val docRef = db
+            .collection("carts")
+            .document(cartId!!)
+            .collection("products")
+            .document(product.docId!!)
+            docRef.update("checked", checked)
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
+            }
     }
 
 }

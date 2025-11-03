@@ -1,8 +1,8 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.products
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,16 +27,17 @@ import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 
 @Composable
-fun HomeView (
+fun ProductsView (
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cartId : String
 ){
 
-    val viewModel : HomeViewModel = viewModel()
+    val viewModel : ProductsViewModel = viewModel()
     val uiState by viewModel.uiState
 
     LaunchedEffect(Unit) {
-        viewModel.fetchCarts()
+        viewModel.fetchProducts(cartId)
     }
 
     Box(
@@ -57,40 +58,42 @@ fun HomeView (
                 modifier = Modifier.fillMaxSize()
             ) {
                 itemsIndexed(
-                    items = uiState.carts
+                    items = uiState.products
                 ) { index, item ->
-
-                    Text(
-                        text = item.name?:"",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .clickable{
-                                navController
-                                    .navigate("products/${item.docId}")
-                            }
-                        ,
-                        fontSize = 32.sp
-                    )
+                   ProductViewCell(
+                       product = item,
+                       onClick = {
+                           navController
+                               .navigate("product_detail/${cartId}/${item.docId}")
+                       },
+                       onCheck = {
+                            viewModel.checkItem(
+                                item,
+                                it
+                            )
+                       }
+                   )
                 }
             }
         }
         Button(
             modifier = Modifier.padding(16.dp),
             onClick = {
-                viewModel.creatCart()
+                navController
+                    .navigate("product_detail/${cartId}")
             }) {
-            Text("Add cart")
+            Text("Add Product")
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeViewPreview() {
+fun ProductsViewPreview() {
     ShoppingListTheme {
-        HomeView(
-            navController = rememberNavController()
+        ProductsView(
+            navController = rememberNavController(),
+            cartId = "123"
         )
     }
 }
