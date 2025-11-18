@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.AndroidEntryPoint
 import ipca.example.shoppinglist.ui.home.HomeView
 import ipca.example.shoppinglist.ui.login.LoginView
 import ipca.example.shoppinglist.ui.products.ProductDetailView
@@ -21,6 +22,8 @@ import ipca.example.shoppinglist.ui.products.ProductsView
 import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 const val TAG = "ShoppingList"
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
