@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,32 +36,30 @@ import java.io.IOException
 
 
 @Composable
-fun ArticlesListView(
+fun ArticlesDBListView(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    source: String = "",
-    onArticleClick: (Article) -> Unit = {}
+    navController: NavController
 ) {
 
-    val viewModel : ArticlesListViewModel = viewModel()
+    val viewModel : ArticlesDBListViewModel = viewModel()
     val uiState by viewModel.uiState
+    val context = LocalContext.current
 
-    ArticlesListViewContent(
+    ArticlesDBListViewContent(
         modifier = modifier,
         uiState = uiState,
         navController = navController,
-        onArticleClick = onArticleClick
     )
 
     LaunchedEffect(Unit) {
-        viewModel.fetchArticles(source)
+        viewModel.fetchArticles(context)
     }
 }
 
 @Composable
-fun ArticlesListViewContent(
+fun ArticlesDBListViewContent(
     modifier: Modifier = Modifier,
-    uiState: ArticlesListState,
+    uiState: ArticlesDBListState,
     navController: NavController,
     onArticleClick: (Article) -> Unit = {}
 ) {
@@ -84,7 +83,6 @@ fun ArticlesListViewContent(
                     items = uiState.articles,
                 ) { index, article ->
                     ArticleViewCell(article){
-                        onArticleClick(article)
                         navController.navigate("article/${article.url?.encodeUrl()}")
                     }
                 }
@@ -96,11 +94,11 @@ fun ArticlesListViewContent(
 
 @Preview(showBackground = true)
 @Composable
-fun ArticlesListViewPreview() {
+fun ArticlesDBListViewPreview() {
     NewsAppTheme {
-        ArticlesListViewContent(
+        ArticlesDBListViewContent(
             modifier = Modifier.padding(10.dp),
-            uiState = ArticlesListState(
+            uiState = ArticlesDBListState(
                 articles = listOf(
                     Article(
                         title = "Title 1",

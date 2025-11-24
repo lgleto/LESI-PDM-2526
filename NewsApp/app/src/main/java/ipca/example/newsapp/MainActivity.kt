@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,15 +21,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ipca.example.newsapp.models.AppDatabase
+import ipca.example.newsapp.models.Article
 import ipca.example.newsapp.ui.articles.ArticleDetailView
+import ipca.example.newsapp.ui.articles.ArticlesDBListView
 import ipca.example.newsapp.ui.articles.ArticlesListView
 import ipca.example.newsapp.ui.components.MyBottomBar
 import ipca.example.newsapp.ui.theme.NewsAppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +47,10 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             var navTitle by remember { mutableStateOf("TechCrunch") }
             var isHomeScreen by remember { mutableStateOf(true) }
+            var context = LocalContext.current
+            var articleOnScreen by remember { mutableStateOf<Article?>(null) }
+            var scope = rememberCoroutineScope()
+
             NewsAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -47,7 +59,23 @@ class MainActivity : ComponentActivity() {
                                 Text(text = navTitle)
                             },
                             actions = {
+                                if (!isHomeScreen)
+                                IconButton(onClick = {
+                                    scope.launch(Dispatchers.IO) {
+                                        articleOnScreen?.let {
+                                            AppDatabase
+                                                .getInstance(context)
+                                                ?.articleDao()
+                                                ?.insert(it)
+                                        }
+                                    }
 
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.FavoriteBorder,
+                                        contentDescription = "Favorite"
+                                    )
+                                }
                             },
                             navigationIcon = {
                                 if (!isHomeScreen)
@@ -78,7 +106,9 @@ class MainActivity : ComponentActivity() {
                             ArticlesListView(
                                 navController = navController,
                                 source = "techcrunch"
-                            )
+                            ){
+                                articleOnScreen = it
+                            }
                         }
                         composable("bloomberg"){
                             navTitle = "Blooberg"
@@ -86,7 +116,9 @@ class MainActivity : ComponentActivity() {
                             ArticlesListView(
                                 navController = navController,
                                 source = "bloomberg"
-                            )
+                            ){
+                                articleOnScreen = it
+                            }
                         }
                         composable("espn"){
                             navTitle = "ESPN"
@@ -94,6 +126,15 @@ class MainActivity : ComponentActivity() {
                             ArticlesListView(
                                 navController = navController,
                                 source = "espn"
+                            ){
+                                articleOnScreen = it
+                            }
+                        }
+                        composable("favorites"){
+                            navTitle = "Favorites"
+                            isHomeScreen = true
+                            ArticlesDBListView(
+                                navController = navController,
                             )
                         }
                         composable("article/{url}"){

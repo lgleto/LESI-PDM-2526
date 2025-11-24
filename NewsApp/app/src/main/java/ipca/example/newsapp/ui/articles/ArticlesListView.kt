@@ -38,7 +38,8 @@ import java.io.IOException
 fun ArticlesListView(
     modifier: Modifier = Modifier,
     navController: NavController,
-    source: String = ""
+    source: String = "",
+    onArticleClick: (Article) -> Unit = {}
 ) {
 
     val viewModel : ArticlesListViewModel = viewModel()
@@ -47,7 +48,8 @@ fun ArticlesListView(
     ArticlesListViewContent(
         modifier = modifier,
         uiState = uiState,
-        navController = navController
+        navController = navController,
+        onArticleClick = onArticleClick
     )
 
     LaunchedEffect(Unit) {
@@ -59,7 +61,8 @@ fun ArticlesListView(
 fun ArticlesListViewContent(
     modifier: Modifier = Modifier,
     uiState: ArticlesListState,
-    navController: NavController
+    navController: NavController,
+    onArticleClick: (Article) -> Unit = {}
 ) {
 
     Box(modifier = modifier.fillMaxSize(),
@@ -81,6 +84,7 @@ fun ArticlesListViewContent(
                     items = uiState.articles,
                 ) { index, article ->
                     ArticleViewCell(article){
+                        onArticleClick(article)
                         navController.navigate("article/${article.url?.encodeUrl()}")
                     }
                 }
